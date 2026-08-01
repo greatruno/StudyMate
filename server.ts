@@ -47,7 +47,7 @@ import {
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 const SERVER_START_TIME = Date.now();
 
 // Attach Production Security & Observability Middleware Suite
