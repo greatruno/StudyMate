@@ -1,0 +1,6 @@
+{
+  "name": "StudyMate",
+  "description": "StudyMate is an advanced global intelligent education platform. It features a unified multi-role AI Assistant (Tutor, Researcher, Exam Coach, Career Advisor), dynamic citation generators, academic integrity analyzers, school roster diagnostics, resource marketplaces, and offline synchronization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

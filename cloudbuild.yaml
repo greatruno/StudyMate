@@ -1,0 +1,54 @@
+steps:
+  # 1. Build Docker image using multi-stage Dockerfile
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/studymate-app:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/studymate-app:latest'
+      - '.'
+
+  # 2. Push image to Google Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/studymate-app:$COMMIT_SHA'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/studymate-app:latest'
+
+  # 3. Deploy container image to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'studymate'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/studymate-app:$COMMIT_SHA'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--port'
+      - '3000'
+      - '--cpu'
+      - '1'
+      - '--memory'
+      - '1Gi'
+      - '--min-instances'
+      - '0'
+      - '--max-instances'
+      - '10'
+      - '--set-env-vars'
+      - 'NODE_ENV=production'
+
+images:
+  - 'gcr.io/$PROJECT_ID/studymate-app:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/studymate-app:latest'
+
+timeout: '900s'

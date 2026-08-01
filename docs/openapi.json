@@ -1,0 +1,479 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "StudyMate Learning Platform API",
+    "description": "Production API specification for StudyMate v1.0 — Universal AI-Powered Learning, Academic Intelligence, and Institutional Management Platform.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "StudyMate Engineering Team",
+      "email": "engineering@studymate.ai",
+      "url": "https://studymate.ai"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development / Container Server"
+    },
+    {
+      "url": "https://api.studymate.ai",
+      "description": "Production Cloud Run Cluster"
+    }
+  ],
+  "tags": [
+    { "name": "Authentication", "description": "User registration, login, and workspace synchronization endpoints" },
+    { "name": "Document Management", "description": "PDF/DOCX/PPTX parsing, RAG text extraction, and file management" },
+    { "name": "AI Study Tools", "description": "Summaries, Adaptive Quizzes, Active Recall Flashcards, Research Analysis, and Integrity Check" },
+    { "name": "Academic Infrastructure", "description": "University structures, Courses, Transcripts, GPA Calculators, and Sessions" },
+    { "name": "Academic Intelligence", "description": "AI Tutor, Study Planner, Diagnostic Analytics, and Pathway Recommendations" },
+    { "name": "Real-Time Collaboration", "description": "Study Groups, Live Whiteboards, Shared Notes, Peer Chat, and Classroom Hub" },
+    { "name": "Institution & Lecturers", "description": "Institutional Analytics, Lecturer Portals, At-Risk Student Alerting, and Exam Engine" },
+    { "name": "System & Telemetry", "description": "Health, Readiness, Metrics, and Platform Auditing" }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": ["System & Telemetry"],
+        "summary": "System Health Check Probe",
+        "description": "Returns detailed health status of memory, storage, AI SDK initialization, and uptime.",
+        "responses": {
+          "200": {
+            "description": "System is healthy",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthCheckResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ready": {
+      "get": {
+        "tags": ["System & Telemetry"],
+        "summary": "Readiness Probe for Kubernetes / Cloud Run",
+        "responses": {
+          "200": {
+            "description": "Application ready to receive traffic",
+            "content": {
+              "application/json": {
+                "example": { "status": "ready", "timestamp": "2026-08-01T12:00:00.000Z" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/metrics": {
+      "get": {
+        "tags": ["System & Telemetry"],
+        "summary": "Application Performance & Diagnostic Metrics",
+        "responses": {
+          "200": {
+            "description": "Telemetry metrics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MetricsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Register New User Account",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Account created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserAccount" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input or username already taken" }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Authentication"],
+        "summary": "Authenticate User Credentials",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/UserAccount" }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" }
+        }
+      }
+    },
+    "/api/parse-document": {
+      "post": {
+        "tags": ["Document Management"],
+        "summary": "Parse & Chunk Document Material",
+        "description": "Processes base64 uploaded files (.pdf, .docx, .pptx, .txt) using native parsers and chunking algorithm.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ParseDocumentRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Document parsed and indexed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ParseDocumentResponse" }
+              }
+            }
+          },
+          "400": { "description": "Unsupported file format or file exceeds 15MB limit" }
+        }
+      }
+    },
+    "/api/generate/summary": {
+      "post": {
+        "tags": ["AI Study Tools"],
+        "summary": "Generate Comprehensive AI Summary",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SummaryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Summary generated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SummaryResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/quiz": {
+      "post": {
+        "tags": ["AI Study Tools"],
+        "summary": "Generate Adaptive Assessment Quiz",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/QuizRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Quiz generated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/QuizResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/generate/flashcards": {
+      "post": {
+        "tags": ["AI Study Tools"],
+        "summary": "Generate Active Recall Flashcards",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FlashcardsRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Flashcards generated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FlashcardsResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/academic/gpa/calculate": {
+      "post": {
+        "tags": ["Academic Infrastructure"],
+        "summary": "Calculate Semester GPA & Cumulative CGPA",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GpaCalculationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Calculated GPA details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GpaCalculationResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/academic/at-risk-students": {
+      "get": {
+        "tags": ["Institution & Lecturers"],
+        "summary": "Fetch At-Risk Student Alerts for Diagnostic",
+        "responses": {
+          "200": {
+            "description": "List of flagged at-risk student alerts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/AtRiskStudentAlert" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthCheckResponse": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "healthy" },
+          "uptimeSeconds": { "type": "number", "example": 1420.5 },
+          "timestamp": { "type": "string" },
+          "version": { "type": "string", "example": "1.0.0" },
+          "memoryUsage": {
+            "type": "object",
+            "properties": {
+              "rssMb": { "type": "number" },
+              "heapTotalMb": { "type": "number" },
+              "heapUsedMb": { "type": "number" }
+            }
+          },
+          "aiSdkConfigured": { "type": "boolean" }
+        }
+      },
+      "MetricsResponse": {
+        "type": "object",
+        "properties": {
+          "totalRegistrations": { "type": "integer" },
+          "totalUploads": { "type": "integer" },
+          "totalQuizzesCompleted": { "type": "integer" },
+          "studyMinutesLogged": { "type": "integer" }
+        }
+      },
+      "RegisterRequest": {
+        "type": "object",
+        "required": ["username", "email", "password"],
+        "properties": {
+          "username": { "type": "string", "example": "alex_student" },
+          "email": { "type": "string", "example": "alex@university.edu" },
+          "password": { "type": "string", "example": "SecurePass123!" },
+          "displayName": { "type": "string", "example": "Alex Student" },
+          "role": { "type": "string", "enum": ["student", "lecturer", "institution_admin"] },
+          "subscription": { "type": "string", "enum": ["free", "premium", "institution"] }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["username", "password"],
+        "properties": {
+          "username": { "type": "string", "example": "alex_student" },
+          "password": { "type": "string", "example": "SecurePass123!" }
+        }
+      },
+      "UserAccount": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "username": { "type": "string" },
+          "email": { "type": "string" },
+          "displayName": { "type": "string" },
+          "role": { "type": "string" },
+          "subscription": { "type": "string" }
+        }
+      },
+      "ParseDocumentRequest": {
+        "type": "object",
+        "properties": {
+          "base64": { "type": "string" },
+          "fileName": { "type": "string", "example": "biology_notes.pdf" },
+          "fileType": { "type": "string", "example": "application/pdf" },
+          "username": { "type": "string" }
+        }
+      },
+      "ParseDocumentResponse": {
+        "type": "object",
+        "properties": {
+          "documentId": { "type": "string" },
+          "text": { "type": "string" },
+          "wordCount": { "type": "integer" }
+        }
+      },
+      "SummaryRequest": {
+        "type": "object",
+        "properties": {
+          "documentId": { "type": "string" },
+          "content": { "type": "string" },
+          "username": { "type": "string" }
+        }
+      },
+      "SummaryResponse": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "summaryText": { "type": "string" },
+          "keyConcepts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "explanation": { "type": "string" }
+              }
+            }
+          },
+          "bulletPoints": { "type": "array", "items": { "type": "string" } }
+        }
+      },
+      "QuizRequest": {
+        "type": "object",
+        "properties": {
+          "documentId": { "type": "string" },
+          "content": { "type": "string" },
+          "difficulty": { "type": "string", "enum": ["beginner", "intermediate", "advanced", "elite"] },
+          "numQuestions": { "type": "integer", "default": 5 }
+        }
+      },
+      "QuizResponse": {
+        "type": "object",
+        "properties": {
+          "questions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "question": { "type": "string" },
+                "options": { "type": "array", "items": { "type": "string" } },
+                "correctOptionIndex": { "type": "integer" },
+                "explanation": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "FlashcardsRequest": {
+        "type": "object",
+        "properties": {
+          "documentId": { "type": "string" },
+          "content": { "type": "string" }
+        }
+      },
+      "FlashcardsResponse": {
+        "type": "object",
+        "properties": {
+          "flashcards": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "front": { "type": "string" },
+                "back": { "type": "string" },
+                "concept": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "GpaCalculationRequest": {
+        "type": "object",
+        "required": ["courses"],
+        "properties": {
+          "gradingSystem": { "type": "string", "example": "4.0" },
+          "courses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "courseCode": { "type": "string", "example": "CSC 101" },
+                "creditHours": { "type": "integer", "example": 3 },
+                "gradeLetter": { "type": "string", "example": "A" }
+              }
+            }
+          }
+        }
+      },
+      "GpaCalculationResponse": {
+        "type": "object",
+        "properties": {
+          "gpa": { "type": "number", "example": 3.75 },
+          "totalCreditHours": { "type": "integer", "example": 15 },
+          "totalQualityPoints": { "type": "number", "example": 56.25 },
+          "academicStanding": { "type": "string", "example": "First Class Honors / Dean's List" }
+        }
+      },
+      "AtRiskStudentAlert": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "studentId": { "type": "string" },
+          "studentDisplayName": { "type": "string" },
+          "courseCode": { "type": "string" },
+          "riskLevel": { "type": "string", "enum": ["low", "medium", "high", "critical"] },
+          "attendancePercentage": { "type": "number" },
+          "averageQuizScore": { "type": "number" },
+          "recommendedIntervention": { "type": "string" }
+        }
+      }
+    }
+  }
+}
