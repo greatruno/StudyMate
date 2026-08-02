@@ -1,8 +1,14 @@
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import ws from "ws";
 
 // Ensure environment variables are loaded
 dotenv.config();
+
+// Ensure globalThis.WebSocket is available in Node.js runtime environment
+if (typeof globalThis.WebSocket === "undefined") {
+  (globalThis as any).WebSocket = ws;
+}
 
 /**
  * Type-safe definition for backend Supabase configuration.
